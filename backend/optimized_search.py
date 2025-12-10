@@ -5,14 +5,11 @@ import random
 from urllib.parse import quote_plus
 import logging
 
-# Import enhanced scraping modules (NEW)
 try:
     from enhanced_scraping import enhanced_comprehensive_search, EnhancedDataScraper
     from advanced_google_scraper import enhanced_google_comprehensive_search, AdvancedGoogleScraper
     ENHANCED_MODULES_AVAILABLE = True
-    print("✅ Enhanced modules available in optimized search")
-except ImportError as e:
-    print(f"⚠️ Enhanced modules not available in optimized search: {e}")
+except ImportError:
     ENHANCED_MODULES_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
@@ -56,19 +53,12 @@ def optimized_search_identity(name=None, image_path=None, progress_callback=None
             update_progress("Image Analysis", "Face Detection & Processing", 0, 2)
             try:
                 from utils import preprocess_image_for_face_detection
-                if preprocess_image_for_face_detection(image_path):
-                    logger.info("✅ Image preprocessed successfully for enhanced search accuracy")
-                else:
-                    logger.warning("⚠️ Image preprocessing failed, continuing with name-based search")
+                preprocess_image_for_face_detection(image_path)
             except Exception as e:
                 logger.error(f"Image processing error: {e}")
         
-        # NEW: Try enhanced search first, but with robust fallback
-        enhanced_attempted = False
         if use_enhanced and ENHANCED_MODULES_AVAILABLE:
-            enhanced_attempted = True
-            update_progress("Attempting Enhanced Search", "All Platforms", 0, 10)
-            
+            update_progress("Enhanced Search", "All Platforms", 0, 10)
             try:
                 from search import search_identity_enhanced_comprehensive
                 enhanced_results = search_identity_enhanced_comprehensive(
@@ -77,18 +67,11 @@ def optimized_search_identity(name=None, image_path=None, progress_callback=None
                     include_activities=True, 
                     include_advanced_google=True
                 )
-                
-                # Only return enhanced results if we got substantial results
-                if len(enhanced_results) > 8:  # Need good amount of results
-                    update_progress("Enhanced Search Successful", "All Platforms", len(enhanced_results), 100)
+                if len(enhanced_results) > 8:
+                    update_progress("Complete", "All Platforms", len(enhanced_results), 100)
                     return enhanced_results
-                else:
-                    logger.warning(f"Enhanced search returned only {len(enhanced_results)} results, using optimized search")
-                    update_progress("Enhanced insufficient, using optimized", "Standard Search", 0, 15)
-                
             except Exception as e:
                 logger.error(f"Enhanced search failed: {e}")
-                update_progress("Enhanced failed, using optimized", "Standard Search", 0, 15)
         
         # Standard optimized search continues below
         # Stage 1: Initialize
@@ -99,11 +82,8 @@ def optimized_search_identity(name=None, image_path=None, progress_callback=None
         social_results = search_social_media_via_google(name)
         results.extend(social_results)
         
-        # Add guaranteed social media results if we didn't get enough
         if len(social_results) < 5:
-            logger.warning(f"Only got {len(social_results)} social results, adding guaranteed results")
-            guaranteed_social = create_guaranteed_social_results(name)
-            results.extend(guaranteed_social)
+            results.extend(create_guaranteed_social_results(name))
         
         update_progress("Social Media Analysis", "Instagram, Twitter, Facebook", len(social_results), 25)
         
@@ -112,11 +92,8 @@ def optimized_search_identity(name=None, image_path=None, progress_callback=None
         professional_results = search_professional_networks(name)
         results.extend(professional_results)
         
-        # Ensure we have professional results
         if len(professional_results) < 3:
-            logger.warning(f"Only got {len(professional_results)} professional results, adding guaranteed ones")
-            guaranteed_professional = create_guaranteed_professional_results(name)
-            results.extend(guaranteed_professional)
+            results.extend(create_guaranteed_professional_results(name))
         
         update_progress("Professional Networks", "LinkedIn, GitHub", len(professional_results), 45)
         
@@ -138,38 +115,17 @@ def optimized_search_identity(name=None, image_path=None, progress_callback=None
         results.extend(news_results)
         update_progress("News & Publications", "News Sites, Blogs", len(news_results), 95)
         
-        # Stage 7: Comprehensive Processing & Analysis
-        update_progress("Processing Results", "Deep Analysis, Face Detection & Ranking - This takes time for accuracy", 0, 95)
+        update_progress("Processing Results", "Analyzing and ranking results", 0, 95)
+        time.sleep(1)
         
-        # Simulate thorough processing time for quality results
-        time.sleep(2)  # Additional processing time for authenticity
-        
-        # Enhanced processing with image analysis consideration
-        if image_path:
-            update_progress("Processing Results", "Analyzing image matches and ranking results", 0, 97)
-            time.sleep(1)  # Image analysis time
-        
-        # Remove duplicates and sort by score with enhanced algorithms
         final_results = process_and_rank_results(results, name)
         
-        # Ensure we always have some results - add direct search links if needed
         if len(final_results) < 10:
-            logger.warning(f"Only found {len(final_results)} results, adding direct search links")
-            direct_links = create_guaranteed_search_results(name)
-            final_results.extend(direct_links)
-            final_results = final_results[:150]  # Keep our limit
+            final_results.extend(create_guaranteed_search_results(name))
+            final_results = final_results[:150]
         
-        logger.info(f"Final optimized search results: {len(final_results)} total results")
-        
-        # Debug: Log result breakdown by platform
-        platforms = {}
-        for result in final_results:
-            platform = result.get('platform', 'Unknown')
-            platforms[platform] = platforms.get(platform, 0) + 1
-        logger.info(f"Results by platform: {platforms}")
-        
-        update_progress("Processing Results", "Finalizing comprehensive analysis", len(final_results), 100)
-        time.sleep(1)  # Final verification time
+        logger.info(f"Final results: {len(final_results)}")
+        update_progress("Complete", "All Platforms", len(final_results), 100)
         
         return final_results
         

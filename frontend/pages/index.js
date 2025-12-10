@@ -56,48 +56,27 @@ export default function Home() {
       
       const body = await res.json()
       
-      // Debug logging
-      console.log('🔍 Frontend: Received response from backend:', body)
-      console.log('🔍 Frontend: Results array:', body.results)
-      console.log('🔍 Frontend: Results length:', body.results?.length || 0)
-      console.log('🔍 Frontend: Total results:', body.total_results)
-      console.log('🔍 Frontend: Sample result:', body.results?.[0])
-      
-      // Validate results structure
       if (!body.results || !Array.isArray(body.results)) {
-        console.error('🚨 Frontend: Invalid results structure received from backend')
-        throw new Error('Invalid results format received from server')
+        throw new Error('Invalid results format')
       }
       
-      // Update results data for progress tracking - this will trigger progress completion
       setResultsData({ 
         totalResults: body.total_results || body.results?.length || 0,
-        searchComplete: true // Signal that search is complete 
+        searchComplete: true
       })
       
-      // Store results in sessionStorage to avoid URL length limits
       const results = body.results || []
       const totalResults = body.total_results || results.length || 0
       
-      console.log('🔍 Frontend: About to store results:', results)
-      console.log('🔍 Frontend: Total count:', totalResults)
-      
       sessionStorage.setItem('searchResults', JSON.stringify(results))
       sessionStorage.setItem('totalResults', String(totalResults))
-      
-      // Also store in localStorage as backup
       localStorage.setItem('lastSearchResults', JSON.stringify(results))
       localStorage.setItem('lastTotalResults', String(totalResults))
       
-      // Wait for progress to complete (simulate the progress timing)
-      console.log('🔍 Frontend: Waiting for progress animation to complete...')
-      
-      // Navigate after a shorter delay since progress will auto-complete
       setTimeout(() => {
-        console.log('🔍 Frontend: Progress complete, navigating to results...')
-        setLoading(false) // Stop the loading state
+        setLoading(false)
         router.push('/results')
-      }, 3000) // Wait 3 seconds for progress animation to show completion
+      }, 3000)
       
     } catch (err) {
       console.error('Search error details:', err)

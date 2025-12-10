@@ -28,23 +28,16 @@ export default function Results() {
       let storedResults = sessionStorage.getItem('searchResults')
       let storedTotalCount = sessionStorage.getItem('totalResults')
       
-      // Fallback to localStorage if sessionStorage is empty
       if (!storedResults) {
-        console.log('📋 Results page: No sessionStorage, checking localStorage...')
         storedResults = localStorage.getItem('lastSearchResults')
         storedTotalCount = localStorage.getItem('lastTotalResults')
       }
       
       if (!storedResults) {
-        console.warn('No results found in sessionStorage or localStorage, checking URL query as fallback')
-        // Fallback to URL query if both storage methods are empty
         const q = router.query.results
-        const totalCount = router.query.totalResults
         const parsed = q ? JSON.parse(q) : []
         setResults(parsed)
-        if (totalCount) {
-          console.log(`Fallback - Total results found: ${totalCount}`)
-        }
+        setLoading(false)
         return
       }
       

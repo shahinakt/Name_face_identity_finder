@@ -1,30 +1,20 @@
-
-from deepface import DeepFace   
+from deepface import DeepFace
 from bs4 import BeautifulSoup
-import requests, tempfile, os, time, random, json
-import concurrent.futures
-import threading
+import requests
+import tempfile
+import os
+import time
+import random
+import json
 import re
 from urllib.parse import quote_plus, urlparse, urljoin
 from utils import cosine_similarity, cleanup_file, preprocess_image_for_face_detection
 
-# Import enhanced scraping modules (NEW - added for comprehensive data gathering)
 try:
     from enhanced_scraping import enhanced_comprehensive_search, EnhancedDataScraper
     from advanced_google_scraper import enhanced_google_comprehensive_search, AdvancedGoogleScraper
     ENHANCED_MODULES_AVAILABLE = True
-    print("✅ Enhanced scraping modules loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Enhanced modules not available: {e}")
-    ENHANCED_MODULES_AVAILABLE = False
-
-# Import enhanced scraping modules (NEW - added for comprehensive data gathering)
-try:
-    from enhanced_scraping import enhanced_comprehensive_search, EnhancedDataScraper
-    from advanced_google_scraper import enhanced_google_comprehensive_search, AdvancedGoogleScraper
-    ENHANCED_MODULES_AVAILABLE = True
-except ImportError as e:
-    print(f"Enhanced modules not available: {e}")
+except ImportError:
     ENHANCED_MODULES_AVAILABLE = False
 
 def extract_actual_web_content(name, max_results=50):

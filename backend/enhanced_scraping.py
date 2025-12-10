@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
-"""
-Enhanced scraping functionality for comprehensive data gathering
-This module extends the existing scraping capabilities without modifying the working Instagram code
-"""
+"""Enhanced scraping for comprehensive social media data gathering"""
 
 import requests
-import requests.adapters
 from bs4 import BeautifulSoup
 import time
 import random
@@ -17,32 +13,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 class EnhancedDataScraper:
-    """
-    Enhanced scraper for comprehensive social media data including activities, interactions, and engagement
-    """
+    """Scraper for social media data including activities and engagement"""
     
     def __init__(self):
         self.session = requests.Session()
-        # Configure session with better timeout and connection handling
-        adapter = requests.adapters.HTTPAdapter(
-            max_retries=requests.adapters.Retry(
-                total=3,
-                backoff_factor=1,
-                status_forcelist=[500, 502, 503, 504]
-            )
-        )
-        self.session.mount('http://', adapter)
-        self.session.mount('https://', adapter)
-        
         self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.9',
-            'Connection': 'keep-alive',
-            'Cache-Control': 'max-age=0'
+            'Connection': 'keep-alive'
         })
-        
-        # Set default timeout
         self.timeout = 10
         
     def scrape_user_activities(self, name, platforms=['instagram', 'twitter', 'facebook', 'tiktok']):
